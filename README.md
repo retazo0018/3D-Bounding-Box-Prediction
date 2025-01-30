@@ -19,6 +19,7 @@
 
 
 ## Code
+- `requirements.txt` contains the packages used for this codebase.
 - `main.py` loads the data from `./data` directory, prepares the data, trains and saves the model.
 - `data_viz.py` visualizes a sample from the dataset.
 - `test.py` evaluates the model on a test sample that was left out in training.

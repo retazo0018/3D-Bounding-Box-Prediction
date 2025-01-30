@@ -1,6 +1,5 @@
-(nerf)  ashwin@Ashwins-MacBook-Pro  ~/Professional/Sereact/challenge   main ±  python main.py
-/Users/ashwin/miniconda3/envs/nerf/lib/python3.11/site-packages/albumentations/__init__.py:28: UserWarning: A new version of Albumentations is available: '2.0.2' (you have '2.0.1'). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
-  check_for_updates()
+python main.py
+
 Loaded data from ./data/8658b670-9915-11ee-9103-bbb8eae05561/pc_features.npz.
 Loaded data from ./data/a0818baa-9915-11ee-9103-bbb8eae05561/pc_features.npz.
 Loaded data from ./data/94855ef3-9915-11ee-9103-bbb8eae05561/pc_features.npz.
