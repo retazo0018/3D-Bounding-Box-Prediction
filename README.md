@@ -19,7 +19,7 @@
 
 
 ## Code
-- `main.py` loads the data, prepares the data, trains and saves the model.
+- `main.py` loads the data from `./data` directory, prepares the data, trains and saves the model.
 - `data_viz.py` visualizes a sample from the dataset.
 - `test.py` evaluates the model on a test sample that was left out in training.
 - `model.pt` is the trained model for 5 epochs and `loss_plot.png` shows the losses over epochs visualization.
