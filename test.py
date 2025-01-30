@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import open3d as o3d
 import albumentations as A
-from data_prepare import preprocess_image, pad_bounding_boxes
+from data_prepare import preprocess_image, pc_feature_extractor
 
 if __name__=="__main__":
     model = torch.load('model.pt')
@@ -33,16 +33,15 @@ if __name__=="__main__":
     resized_y = A.Resize(480, 640)(image=pointcloud_reshaped[:, :, 1])["image"]
     resized_z = A.Resize(480, 640)(image=pointcloud_reshaped[:, :, 2])["image"]
     pc = np.stack([resized_x, resized_y, resized_z], axis=-1).reshape(-1, 3)
-    pc = np.expand_dims(pc, 0)
+    pc_features = pc_feature_extractor(pc)
+    pc_features = np.expand_dims(pc_features, 0)
+    pc_features = torch.from_numpy(pc_features)
 
-    bbox3d = np.load(bbox3d_path)
-    bbox3d = pad_bounding_boxes(bbox3d)
-
-    pred_box = model([rgb, mask, pc])
+    pred_box = model([rgb, mask, pc_features])
     pred_box = pred_box[0].detach().numpy()
 
     pc_o3d = o3d.geometry.PointCloud()
-    pc_o3d.points = o3d.utility.Vector3dVector(pc[0])
+    pc_o3d.points = o3d.utility.Vector3dVector(pc)
     geometries = [pc_o3d]
     lines = [
         [0, 1], [1, 2], [2, 3], [3, 0],  # Bottom face
@@ -59,6 +58,6 @@ if __name__=="__main__":
         line_set.paint_uniform_color([1, 0, 0]) 
         geometries.append(line_set)
 
-    o3d.visualization.draw_geometries(geometries, window_name="Point Cloud + 3D Bounding Boxes")
+    o3d.visualization.draw_geometries(geometries, window_name="Point Cloud + Predicted 3D Bounding Boxes")
 
 

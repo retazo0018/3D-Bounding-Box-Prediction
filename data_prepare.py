@@ -33,48 +33,48 @@ def load_data(data_dir):
     for sample_dir in os.listdir(data_dir):
         sample_path = os.path.join(data_dir, sample_dir)
         if os.path.isdir(sample_path):
-            #try:
-            rgb_path = os.path.join(sample_path, "rgb.jpg")
-            rgb = cv2.imread(rgb_path)
-            o_h, o_w = rgb.shape[0], rgb.shape[1]
-            rgb = cv2.resize(rgb, (640, 480), interpolation=cv2.INTER_NEAREST)
-            rgb = preprocess_image(rgb)
-            rgbs.append(rgb)
+            try:
+                rgb_path = os.path.join(sample_path, "rgb.jpg")
+                rgb = cv2.imread(rgb_path)
+                o_h, o_w = rgb.shape[0], rgb.shape[1]
+                rgb = cv2.resize(rgb, (640, 480), interpolation=cv2.INTER_NEAREST)
+                rgb = preprocess_image(rgb)
+                rgbs.append(rgb)
 
-            mask_path = os.path.join(sample_path, "mask.npy")
-            mask = np.load(mask_path)
-            mask = np.any(mask, axis=0, keepdims=True).squeeze()
-            mask_uint8 = mask.astype(np.uint8)
-            mask = A.Resize(480, 640)(image=mask_uint8)["image"]
-            mask = torch.from_numpy(mask)
-            masks.append(mask)
-            
-            pc_features_path = os.path.join(sample_path, "pc_features.npz")
-            if os.path.exists(pc_features_path):
-                print(f"Loaded data from {pc_features_path}.")
-                pc_features = torch.from_numpy(np.load(pc_features_path)['data_array'])
-            else:
-                pc_path = os.path.join(sample_path, "pc.npy")
-                pc = np.load(pc_path).reshape(3, -1).T
-                pc_reshaped = pc.reshape(o_h, o_w, 3)
-                resized_x = A.Resize(480, 640)(image=pc_reshaped[:, :, 0])["image"]
-                resized_y = A.Resize(480, 640)(image=pc_reshaped[:, :, 1])["image"]
-                resized_z = A.Resize(480, 640)(image=pc_reshaped[:, :, 2])["image"]
-                pc = np.stack([resized_x, resized_y, resized_z], axis=-1).reshape(-1, 3)
-                pc_features = np.asarray(pc_feature_extractor(pc))
-                print(f"Saved pc_features at {pc_features_path}.")
-                np.savez_compressed(pc_features_path, data_array=pc_features)
-                pc_features = torch.from_numpy(pc_features)
-            pcs.append(pc_features)
+                mask_path = os.path.join(sample_path, "mask.npy")
+                mask = np.load(mask_path)
+                mask = np.any(mask, axis=0, keepdims=True).squeeze()
+                mask_uint8 = mask.astype(np.uint8)
+                mask = A.Resize(480, 640)(image=mask_uint8)["image"]
+                mask = torch.from_numpy(mask)
+                masks.append(mask)
+                
+                pc_features_path = os.path.join(sample_path, "pc_features.npz")
+                if os.path.exists(pc_features_path):
+                    print(f"Loaded data from {pc_features_path}.")
+                    pc_features = torch.from_numpy(np.load(pc_features_path)['data_array'])
+                else:
+                    pc_path = os.path.join(sample_path, "pc.npy")
+                    pc = np.load(pc_path).reshape(3, -1).T
+                    pc_reshaped = pc.reshape(o_h, o_w, 3)
+                    resized_x = A.Resize(480, 640)(image=pc_reshaped[:, :, 0])["image"]
+                    resized_y = A.Resize(480, 640)(image=pc_reshaped[:, :, 1])["image"]
+                    resized_z = A.Resize(480, 640)(image=pc_reshaped[:, :, 2])["image"]
+                    pc = np.stack([resized_x, resized_y, resized_z], axis=-1).reshape(-1, 3)
+                    pc_features = np.asarray(pc_feature_extractor(pc))
+                    print(f"Saved pc_features at {pc_features_path}.")
+                    np.savez_compressed(pc_features_path, data_array=pc_features)
+                    pc_features = torch.from_numpy(pc_features)
+                pcs.append(pc_features)
 
-            bbox3d_path = os.path.join(sample_path, "bbox3d.npy")
-            bbox3d = np.load(bbox3d_path)
-            bbox3d = pad_bounding_boxes(bbox3d)
-            bbox3d = torch.from_numpy(bbox3d)
-            bboxs3d.append(bbox3d)
+                bbox3d_path = os.path.join(sample_path, "bbox3d.npy")
+                bbox3d = np.load(bbox3d_path)
+                bbox3d = pad_bounding_boxes(bbox3d)
+                bbox3d = torch.from_numpy(bbox3d)
+                bboxs3d.append(bbox3d)
 
-            #except Exception as e:
-            #print(f"Error loading sample from {sample_path}: {e}")
+            except Exception as e:
+                print(f"Error loading sample from {sample_path}: {e}")
     
     samples = {
         "rgb": rgbs,

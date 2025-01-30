@@ -4,6 +4,17 @@ import open3d as o3d
 import matplotlib.pyplot as plt
 
 
+def plot_losses(train_losses, title="Training Loss", ylabel="Loss"):
+    plt.figure(figsize=(8, 5))
+    plt.plot(train_losses, label="Train Loss", marker='o', linestyle='-')
+    plt.xlabel("Epochs")
+    plt.ylabel(ylabel)
+    plt.title(title)
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('loss_plot.png')
+
+
 def visualize_dataset(rgb_path, mask_path, bbox3d_path, pc_path):
     # Load data
     rgb = plt.imread(rgb_path)
