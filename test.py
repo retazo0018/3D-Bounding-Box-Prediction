@@ -60,4 +60,3 @@ if __name__=="__main__":
 
     o3d.visualization.draw_geometries(geometries, window_name="Point Cloud + Predicted 3D Bounding Boxes")
 
-

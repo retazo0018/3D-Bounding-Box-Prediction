@@ -1,7 +1,7 @@
 
 import torch
-from torch.utils.data import DataLoader
 from data_viz import plot_losses
+from torch.utils.data import DataLoader
 from data_prepare import prepare_data, Custom3DBBoxDataset
 from model import MultiObject3DBBoxModel, hybrid_3d_bbox_loss
 

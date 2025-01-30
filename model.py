@@ -1,7 +1,6 @@
 
 import torch
 import numpy as np
-import open3d as o3d
 import torch.nn as nn
 import torch.nn.functional as F  
 import torchvision.models as models
@@ -55,6 +54,7 @@ class FeatureFusion(nn.Module):
         # Concatenate both modalities
         fused_features = torch.cat([rgb_features_projected, pc_features_projected], dim=1)
         fused_features = self.fusion_layer(fused_features)
+
         return fused_features # (B, fused_feature_dim)
 
 
