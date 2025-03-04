@@ -1,4 +1,4 @@
-# 3D Bounding Box Prediction
+# 3D Bounding Box Prediction - Ashwin MURALI
 - A deep learning model for 3D bounding box prediction given RGB, Instance Segmentation Mask, Pointcloud as inputs. 
 - The code is a work in progress, intended to demonstrate the overall concept. 
 - Due to limited hardware resources and time constraints, some planned features (listed in the TODO) have not yet been implemented. 
@@ -8,6 +8,7 @@
 - Resized each image and pointcloud to a fixed dimension.
 - Concatenated all instance segmentation masks into one.
 - Padded ground truth 3d bounding boxes to equal number of instances.
+- Currently, the point cloud features are saved to disk to allow for quick loading during training.
 ![alt text](docs/data_prep.png "Data Preparation")
 
 
