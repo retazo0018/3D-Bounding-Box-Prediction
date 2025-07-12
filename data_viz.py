@@ -60,7 +60,7 @@ def visualize_dataset(rgb_path, mask_path, bbox3d_path, pc_path):
         line_set = o3d.geometry.LineSet()
         line_set.points = o3d.utility.Vector3dVector(single_bbox)
         line_set.lines = o3d.utility.Vector2iVector(lines)
-        line_set.paint_uniform_color([1, 0, 0]) 
+        line_set.paint_uniform_color([0, 0, 0]) 
         geometries.append(line_set)
 
     # Visualize all geometries
@@ -68,7 +68,7 @@ def visualize_dataset(rgb_path, mask_path, bbox3d_path, pc_path):
 
 
 if __name__=="__main__":
-    file_name = "9a7caa9b-9915-11ee-9103-bbb8eae05561"
+    file_name = "8b061a90-9915-11ee-9103-bbb8eae05561"
     rgb_path = f"./data/{file_name}/rgb.jpg"
     mask_path = f"./data/{file_name}/mask.npy"
     bbox3d_path = f"./data/{file_name}/bbox3d.npy"

@@ -1,6 +1,4 @@
 data/
 __pycache__
-temp.py
 model.pt
 am_coding_challenge.zip
-README.pdf
