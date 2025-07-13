@@ -8,7 +8,7 @@ from model import MultiObject3DBBoxModel, hybrid_3d_bbox_loss
 
 if __name__=="__main__":
     data_dir = "./data"
-    EPOCHS = 10
+    EPOCHS = 2
     BATCH_SIZE = 16
 
     dataset = Custom3DBBoxDataset(prepare_data(data_dir))

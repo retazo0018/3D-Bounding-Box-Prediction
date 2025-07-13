@@ -32,7 +32,7 @@ def preprocess_sample(rgb, mask, point_cloud, num_instances, sample_dim):
 def load_data(data_dir):
     rgbs, masks, pcs, bboxs3d = [], [], [], []
     MAX_INSTANCES = 25
-    IM_H, IM_W = 512, 512
+    IM_H, IM_W = 640, 640
     
     for sample_dir in os.listdir(data_dir):
         sample_path = os.path.join(data_dir, sample_dir)
