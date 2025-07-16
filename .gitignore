@@ -1,4 +1,10 @@
+# Data Directory
 data/
+
+# Cache
 __pycache__
+.pytest_cache
+
+# Model Files
 model.pt
-am_coding_challenge.zip
+model.onnx

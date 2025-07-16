@@ -1,6 +1,25 @@
+'''
+    Copyright (c) 2025 Ashwin Murali <ashwin.cse18@gmail.com>
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+'''
 
 import torch
-import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F  
 import torchvision.models as models
@@ -20,7 +39,7 @@ class BBoxRegressor(nn.Module):
 
         return self.fc(roi_features).view(-1, self.num_proposals, 8, 3) # (B, num_proposals, 8, 3)
 
-class MaskGuidedCenterPredictor(nn.Module):
+class CenterPredictor(nn.Module):
     def __init__(self, input_dim, num_centers):
         super().__init__()
         self.num_centers = num_centers
@@ -33,29 +52,6 @@ class MaskGuidedCenterPredictor(nn.Module):
     def forward(self, mask_features):
 
         return self.fc(mask_features) # (B, num_centers*3)
-
-class NaiveFeatureFusion(nn.Module):
-    def __init__(self, rgb_feature_dim, pc_feature_dim, fused_feature_dim):
-        super(NaiveFeatureFusion, self).__init__()
-        self.rgb_projector = nn.Linear(rgb_feature_dim, fused_feature_dim)  
-        self.pc_projector = nn.Linear(pc_feature_dim, fused_feature_dim)  
-        self.fusion_layer = nn.Linear(fused_feature_dim * 2, fused_feature_dim)
-
-    def forward(self, weighted_rgb_features, weighted_pc_features):
-        B, C_r, _, _ = weighted_rgb_features.shape
-        B, C_p, _, _ = weighted_pc_features.shape
-
-        # Flatten RGB features (e.g., global average pooling)
-        rgb_features_flat = weighted_rgb_features.view(B, C_r, -1).mean(dim=-1)
-        pc_features_flat = weighted_pc_features.view(B, C_p, -1).mean(dim=-1)
-        rgb_features_projected = self.rgb_projector(rgb_features_flat) 
-        pc_features_projected = self.pc_projector(pc_features_flat) 
-        
-        # Concatenate both modalities
-        fused_features = torch.cat([rgb_features_projected, pc_features_projected], dim=1)
-        fused_features = self.fusion_layer(fused_features)
-
-        return fused_features # (B, fused_feature_dim)
 
 class TransformerFeatureFusion(nn.Module):
     def __init__(self, rgb_feature_dim, pc_feature_dim, fused_feature_dim, num_heads=4, num_layers=2):
@@ -128,7 +124,7 @@ class MultiObject3DBBoxModel(nn.Module):
 
         self.pc_feat_extractor = PCFeatureExtractor(in_channels=3, out_channels=128)
         self.feature_fusion_using_transformers = TransformerFeatureFusion(rgb_feature_dim=2048, pc_feature_dim=128, fused_feature_dim=512)
-        self.center_predictor = MaskGuidedCenterPredictor(input_dim=512, num_centers=num_centers)
+        self.center_predictor = CenterPredictor(input_dim=512, num_centers=num_centers)
         self.regressor = BBoxRegressor(input_dim=num_centers*3, num_proposals=num_proposals)
 
     def weigh_features_by_instance_mask(self, rgb, pc, mask):
@@ -172,4 +168,3 @@ def hybrid_3d_bbox_loss(pred_boxes, gt_boxes):
     chamfer_dist = torch.min(dist, dim=2)[0].mean() + torch.min(dist, dim=1)[0].mean()     
 
     return l2_loss+chamfer_dist
-

@@ -1,3 +1,23 @@
+'''
+    Copyright (c) 2025 Ashwin Murali <ashwin.cse18@gmail.com>
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+'''
 
 import os
 from PIL import Image
@@ -6,6 +26,8 @@ import numpy as np
 from torch.utils.data import Dataset
 import torchvision.transforms as T
 import torch.nn.functional as F
+from rich.console import Console
+
 
 
 def preprocess_sample(rgb, mask, point_cloud, num_instances, sample_dim):
@@ -18,14 +40,14 @@ def preprocess_sample(rgb, mask, point_cloud, num_instances, sample_dim):
     rgb_tensor = preprocess(rgb)
 
     mask = torch.from_numpy(mask).unsqueeze(0).float()  # (1, 12, H, W)
-    mask_resized = F.interpolate(mask, size=(IM_H, IM_W), mode='nearest')  # Still (1, C, 512, 512)
-    mask_resized = mask_resized.squeeze() # (C, 512, 512)
+    mask_resized = F.interpolate(mask, size=(IM_H, IM_W), mode='nearest')  # Still (1, C, IM_H, IM_W)
+    mask_resized = mask_resized.squeeze() # (C, IM_H, 512)
     pad_shape = (num_instances - mask_resized.shape[0], IM_H, IM_W)
     pad_tensor = torch.zeros(pad_shape, dtype=mask_resized.dtype)
-    mask_tensor = torch.cat([mask_resized, pad_tensor], dim=0)  # (25, 512, 512)
+    mask_tensor = torch.cat([mask_resized, pad_tensor], dim=0)  # (25, IM_H, IM_W)
 
     point_cloud = torch.tensor(point_cloud).unsqueeze(0)  # (1, 3, H, W)
-    point_cloud_tensor = F.interpolate(point_cloud, size=(IM_H, IM_W), mode='bilinear', align_corners=True).squeeze() # (3, 512, 512)
+    point_cloud_tensor = F.interpolate(point_cloud, size=(IM_H, IM_W), mode='bilinear', align_corners=True).squeeze() # (3, IM_H, IM_W)
     
     return rgb_tensor, mask_tensor, point_cloud_tensor
 
@@ -57,7 +79,7 @@ def load_data(data_dir):
                 bboxs3d.append(bbox3d)  # (25, 8, 3)
 
             except Exception as e:
-                print(f"Error loading sample from {sample_path}: {e}")
+                Console().print(f"[bold red]❌ Error loading sample from[/bold red] [white]{sample_path}[/white]: {e}", style="red")
     
     samples = {
         "rgb": rgbs,
@@ -70,7 +92,6 @@ def load_data(data_dir):
 
 def prepare_data(data_dir):
     samples = load_data(data_dir)
-    print(f"Loaded {len(samples['rgb'])} samples.")
 
     return samples
 

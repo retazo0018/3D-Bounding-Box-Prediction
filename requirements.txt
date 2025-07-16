@@ -3,3 +3,5 @@ open3d
 albumentations
 numpy
 cv2
+pytest
+rich

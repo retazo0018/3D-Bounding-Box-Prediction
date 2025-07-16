@@ -1,0 +1,132 @@
+> python main.py --data_dir ./data --epochs 10 --batch_size 16
+╭───────────────────────────────╮
+│ 🚀 3D Bounding Box Prediction │
+╰───────────────────────────────╯
+Starting Data Preprocessing...
+❌ Error loading sample from ./data/9bccdb81-9915-11ee-9103-bbb8eae05561: Trying to create tensor with negative dimension -615: [-615, 640, 640]
+❌ Error loading sample from ./data/96e66c6b-9915-11ee-9103-bbb8eae05561: Trying to create tensor with negative dimension -615: [-615, 640, 640]
+❌ Error loading sample from ./data/8fc581d1-9915-11ee-9103-bbb8eae05561: Trying to create tensor with negative dimension -615: [-615, 640, 640]
+❌ Error loading sample from ./data/a0818ba8-9915-11ee-9103-bbb8eae05561: Trying to create tensor with negative dimension -615: [-615, 640, 640]
+❌ Error loading sample from ./data/936fee38-9915-11ee-9103-bbb8eae05561: Trying to create tensor with negative dimension -615: [-615, 640, 640]
+❌ Error loading sample from ./data/889a9fb2-9915-11ee-9103-bbb8eae05561: Trying to create tensor with negative dimension -615: [-615, 640, 640]
+❌ Error loading sample from ./data/936fee3e-9915-11ee-9103-bbb8eae05561: Trying to create tensor with negative dimension -615: [-615, 640, 640]
+❌ Error loading sample from ./data/8eaf3ee7-9915-11ee-9103-bbb8eae05561: Trying to create tensor with negative dimension -615: [-615, 640, 640]
+❌ Error loading sample from ./data/889a9fb9-9915-11ee-9103-bbb8eae05561: Trying to create tensor with negative dimension -615: [-615, 640, 640]
+❌ Error loading sample from ./data/983022aa-9915-11ee-9103-bbb8eae05561: Trying to create tensor with negative dimension -615: [-615, 640, 640]
+❌ Error loading sample from ./data/a0818ba5-9915-11ee-9103-bbb8eae05561: Trying to create tensor with negative dimension -615: [-615, 640, 640]
+Data preprocessing complete! Loaded 189 samples. 
+Starting Model Training...
+🔄 Training Epoch 1  ┃ Batch: 1 ended with 0.7124 loss.
+🔄 Training Epoch 1  ┃ Batch: 2 ended with 0.6669 loss.
+🔄 Training Epoch 1  ┃ Batch: 3 ended with 0.6322 loss.
+🔄 Training Epoch 1  ┃ Batch: 4 ended with 0.6642 loss.
+🔄 Training Epoch 1  ┃ Batch: 5 ended with 0.5997 loss.
+🔄 Training Epoch 1  ┃ Batch: 6 ended with 0.6906 loss.
+🔄 Training Epoch 1  ┃ Batch: 7 ended with 0.5810 loss.
+🔄 Training Epoch 1  ┃ Batch: 8 ended with 0.4661 loss.
+🔄 Training Epoch 1  ┃ Batch: 9 ended with 0.5793 loss.
+🔄 Training Epoch 1  ┃ Batch: 10 ended with 0.5433 loss.
+Epoch: 1 ended with loss 0.6135652661323547. 
+🔄 Training Epoch 2  ┃ Batch: 1 ended with 0.6704 loss.
+🔄 Training Epoch 2  ┃ Batch: 2 ended with 0.5344 loss.
+🔄 Training Epoch 2  ┃ Batch: 3 ended with 0.5969 loss.
+🔄 Training Epoch 2  ┃ Batch: 4 ended with 0.5093 loss.
+🔄 Training Epoch 2  ┃ Batch: 5 ended with 0.6451 loss.
+🔄 Training Epoch 2  ┃ Batch: 6 ended with 0.4600 loss.
+🔄 Training Epoch 2  ┃ Batch: 7 ended with 0.5837 loss.
+🔄 Training Epoch 2  ┃ Batch: 8 ended with 0.4645 loss.
+🔄 Training Epoch 2  ┃ Batch: 9 ended with 0.4699 loss.
+🔄 Training Epoch 2  ┃ Batch: 10 ended with 0.4932 loss.
+Epoch: 2 ended with loss 0.5427473187446594. 
+🔄 Training Epoch 3  ┃ Batch: 1 ended with 0.5093 loss.
+🔄 Training Epoch 3  ┃ Batch: 2 ended with 0.4420 loss.
+🔄 Training Epoch 3  ┃ Batch: 3 ended with 0.4450 loss.
+🔄 Training Epoch 3  ┃ Batch: 4 ended with 0.4823 loss.
+🔄 Training Epoch 3  ┃ Batch: 5 ended with 0.4467 loss.
+🔄 Training Epoch 3  ┃ Batch: 6 ended with 0.4365 loss.
+🔄 Training Epoch 3  ┃ Batch: 7 ended with 0.4204 loss.
+🔄 Training Epoch 3  ┃ Batch: 8 ended with 0.4875 loss.
+🔄 Training Epoch 3  ┃ Batch: 9 ended with 0.4870 loss.
+🔄 Training Epoch 3  ┃ Batch: 10 ended with 0.4107 loss.
+Epoch: 3 ended with loss 0.45674389600753784. 
+🔄 Training Epoch 4  ┃ Batch: 1 ended with 0.4824 loss.
+🔄 Training Epoch 4  ┃ Batch: 2 ended with 0.3759 loss.
+🔄 Training Epoch 4  ┃ Batch: 3 ended with 0.3530 loss.
+🔄 Training Epoch 4  ┃ Batch: 4 ended with 0.3207 loss.
+🔄 Training Epoch 4  ┃ Batch: 5 ended with 0.3694 loss.
+🔄 Training Epoch 4  ┃ Batch: 6 ended with 0.3230 loss.
+🔄 Training Epoch 4  ┃ Batch: 7 ended with 0.3212 loss.
+🔄 Training Epoch 4  ┃ Batch: 8 ended with 0.3309 loss.
+🔄 Training Epoch 4  ┃ Batch: 9 ended with 0.2438 loss.
+🔄 Training Epoch 4  ┃ Batch: 10 ended with 0.2652 loss.
+Epoch: 4 ended with loss 0.3385637700557709. 
+🔄 Training Epoch 5  ┃ Batch: 1 ended with 0.2366 loss.
+🔄 Training Epoch 5  ┃ Batch: 2 ended with 0.2399 loss.
+🔄 Training Epoch 5  ┃ Batch: 3 ended with 0.2503 loss.
+🔄 Training Epoch 5  ┃ Batch: 4 ended with 0.2386 loss.
+🔄 Training Epoch 5  ┃ Batch: 5 ended with 0.3054 loss.
+🔄 Training Epoch 5  ┃ Batch: 6 ended with 0.2648 loss.
+🔄 Training Epoch 5  ┃ Batch: 7 ended with 0.2737 loss.
+🔄 Training Epoch 5  ┃ Batch: 8 ended with 0.2541 loss.
+🔄 Training Epoch 5  ┃ Batch: 9 ended with 0.2476 loss.
+🔄 Training Epoch 5  ┃ Batch: 10 ended with 0.2785 loss.
+Epoch: 5 ended with loss 0.25894418358802795. 
+🔄 Training Epoch 6  ┃ Batch: 1 ended with 0.1988 loss.
+🔄 Training Epoch 6  ┃ Batch: 2 ended with 0.2659 loss.
+🔄 Training Epoch 6  ┃ Batch: 3 ended with 0.2187 loss.
+🔄 Training Epoch 6  ┃ Batch: 4 ended with 0.2392 loss.
+🔄 Training Epoch 6  ┃ Batch: 5 ended with 0.2149 loss.
+🔄 Training Epoch 6  ┃ Batch: 6 ended with 0.2455 loss.
+🔄 Training Epoch 6  ┃ Batch: 7 ended with 0.2375 loss.
+🔄 Training Epoch 6  ┃ Batch: 8 ended with 0.2151 loss.
+🔄 Training Epoch 6  ┃ Batch: 9 ended with 0.1712 loss.
+🔄 Training Epoch 6  ┃ Batch: 10 ended with 0.1717 loss.
+Epoch: 6 ended with loss 0.21785052120685577. 
+🔄 Training Epoch 7  ┃ Batch: 1 ended with 0.1908 loss.
+🔄 Training Epoch 7  ┃ Batch: 2 ended with 0.1717 loss.
+🔄 Training Epoch 7  ┃ Batch: 3 ended with 0.1812 loss.
+🔄 Training Epoch 7  ┃ Batch: 4 ended with 0.2077 loss.
+🔄 Training Epoch 7  ┃ Batch: 5 ended with 0.1881 loss.
+🔄 Training Epoch 7  ┃ Batch: 6 ended with 0.2053 loss.
+🔄 Training Epoch 7  ┃ Batch: 7 ended with 0.1962 loss.
+🔄 Training Epoch 7  ┃ Batch: 8 ended with 0.1887 loss.
+🔄 Training Epoch 7  ┃ Batch: 9 ended with 0.1787 loss.
+🔄 Training Epoch 7  ┃ Batch: 10 ended with 0.2028 loss.
+Epoch: 7 ended with loss 0.19112303853034973. 
+🔄 Training Epoch 8  ┃ Batch: 1 ended with 0.1479 loss.
+🔄 Training Epoch 8  ┃ Batch: 2 ended with 0.2201 loss.
+🔄 Training Epoch 8  ┃ Batch: 3 ended with 0.2220 loss.
+🔄 Training Epoch 8  ┃ Batch: 4 ended with 0.1556 loss.
+🔄 Training Epoch 8  ┃ Batch: 5 ended with 0.1720 loss.
+🔄 Training Epoch 8  ┃ Batch: 6 ended with 0.1827 loss.
+🔄 Training Epoch 8  ┃ Batch: 7 ended with 0.1695 loss.
+🔄 Training Epoch 8  ┃ Batch: 8 ended with 0.1532 loss.
+🔄 Training Epoch 8  ┃ Batch: 9 ended with 0.1664 loss.
+🔄 Training Epoch 8  ┃ Batch: 10 ended with 0.1576 loss.
+Epoch: 8 ended with loss 0.17468824982643127. 
+🔄 Training Epoch 9  ┃ Batch: 1 ended with 0.1810 loss.
+🔄 Training Epoch 9  ┃ Batch: 2 ended with 0.1546 loss.
+🔄 Training Epoch 9  ┃ Batch: 3 ended with 0.1664 loss.
+🔄 Training Epoch 9  ┃ Batch: 4 ended with 0.1487 loss.
+🔄 Training Epoch 9  ┃ Batch: 5 ended with 0.1607 loss.
+🔄 Training Epoch 9  ┃ Batch: 6 ended with 0.1848 loss.
+🔄 Training Epoch 9  ┃ Batch: 7 ended with 0.1762 loss.
+🔄 Training Epoch 9  ┃ Batch: 8 ended with 0.1649 loss.
+🔄 Training Epoch 9  ┃ Batch: 9 ended with 0.1542 loss.
+🔄 Training Epoch 9  ┃ Batch: 10 ended with 0.1602 loss.
+Epoch: 9 ended with loss 0.16517136991024017. 
+🔄 Training Epoch 10  ┃ Batch: 1 ended with 0.1643 loss.
+🔄 Training Epoch 10  ┃ Batch: 2 ended with 0.1526 loss.
+🔄 Training Epoch 10  ┃ Batch: 3 ended with 0.1574 loss.
+🔄 Training Epoch 10  ┃ Batch: 4 ended with 0.1422 loss.
+🔄 Training Epoch 10  ┃ Batch: 5 ended with 0.1610 loss.
+🔄 Training Epoch 10  ┃ Batch: 6 ended with 0.1682 loss.
+🔄 Training Epoch 10  ┃ Batch: 7 ended with 0.1679 loss.
+🔄 Training Epoch 10  ┃ Batch: 8 ended with 0.1595 loss.
+🔄 Training Epoch 10  ┃ Batch: 9 ended with 0.1538 loss.
+🔄 Training Epoch 10  ┃ Batch: 10 ended with 0.1520 loss.
+Epoch: 10 ended with loss 0.15788349509239197. 
+Model Training complete! 
+🔄 Starting Evaluation ... 
+Model Evaluation Complete. Loss obtained: 0.1438378095626831. 
+Model Saved Successfully!
