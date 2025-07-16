@@ -10,18 +10,19 @@
 - Optimize the Model as ONNX: `python convert_to_onnx.py`
 - Infer the Model: `python run_inference.py`
 
-## Data Preparation
-To ensure consistency across samples with varying shapes and sizes, the following preprocessing steps were applied:
-
-- **Resizing**: Each image, mask, and point cloud was resized to a fixed dimension.
-- **Instance Mask Padding**: Instance segmentation masks were padded to match a fixed maximum number of instances (MAX_INSTANCES).
-- **3D Bounding Box Padding**: Ground truth 3D bounding boxes were padded to also match MAX_INSTANCES.
-
+## Implementation
 | ![alt text](docs/data_prep.png "Data Preparation") |
 |:--:|
-| *Figure 1: Data Preprocessing and Dataset Preparation* |
+| *Figure 1: System Architecture* |
 
-## Implementation
+### Data Preprocessing
+To ensure consistency across samples with varying shapes and sizes, the following preprocessing steps were applied:
+
+- **Resizing**: Each image, mask, and point cloud was resized to a FIXED_DIMENSION. FIXED_DIMENSION comprises of a height (H_FIX) and a width (W_FIX).
+- **Instance Mask Padding**: Instance segmentation masks were padded to match a fixed maximum number of instances (MAX_INSTANCES).
+- **3D Bounding Box Padding**: Ground truth 3D bounding boxes were padded to also match MAX_INSTANCES.
+- MAX_INSTANCES is a hyperparameter and set to `25`.
+- FIXED_DIMENSION is hyperparameter and set to `640, 640`
 
 ### Model Architecture
 - The model integrates RGB and point cloud features into a unified latent representation using Transformers.
