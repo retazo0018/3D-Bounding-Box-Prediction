@@ -2,7 +2,7 @@ torch
 open3d
 albumentations
 numpy
-cv2
+opencv-python
 pytest
 rich
 transformers

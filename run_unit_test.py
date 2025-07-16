@@ -6,18 +6,18 @@ from PIL import Image
 
 
 def test_hybrid_loss():
-    box = torch.rand(1, 8, 3)  # A random box with 8 corners
+    box = torch.rand(1, 25, 8, 3)  # A random box with 8 corners
     loss = hybrid_3d_bbox_loss(box, box)
     assert torch.isclose(loss, torch.tensor(0.0), atol=1e-6), f"Loss should be zero when inputs match, got {loss.item()}"
 
-    box1 = torch.zeros(1, 8, 3)
-    box2 = torch.ones(1, 8, 3)
+    box1 = torch.zeros(1, 25, 8, 3)
+    box2 = torch.ones(1, 25, 8, 3)
     loss = hybrid_3d_bbox_loss(box1, box2)
     assert loss > 0, f"Loss should be positive for different boxes, got {loss.item()}"
 
 def test_hybrid_loss_batch_shape():
-    pred = torch.rand(4, 8, 3)  # batch of 4
-    gt = torch.rand(4, 8, 3)
+    pred = torch.rand(4, 25, 8, 3)  # batch of 4
+    gt = torch.rand(4, 25, 8, 3)
     loss = hybrid_3d_bbox_loss(pred, gt)
     assert loss.ndim == 0, f"Loss should be scalar, got shape {loss.shape}"
 
