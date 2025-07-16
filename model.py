@@ -115,12 +115,13 @@ class PCFeatureExtractor(nn.Module):
         return self.extractor(pc)  # [B, out_channels, H_feat, W_feat]
 
 class MultiObject3DBBoxModel(nn.Module):
-    def __init__(self, num_centers=25, num_proposals=25):
+    def __init__(self, MAX_INSTANCES):
         super().__init__()
         self.resnet = models.resnet50(weights='ResNet50_Weights.DEFAULT')
         self.rgb_feat_extractor = nn.Sequential(*list(self.resnet.children())[:-2])
         for param in self.rgb_feat_extractor.parameters():
             param.requires_grad = False
+        num_centers, num_proposals = MAX_INSTANCES, MAX_INSTANCES
 
         self.pc_feat_extractor = PCFeatureExtractor(in_channels=3, out_channels=128)
         self.feature_fusion_using_transformers = TransformerFeatureFusion(rgb_feature_dim=2048, pc_feature_dim=128, fused_feature_dim=512)
@@ -149,8 +150,7 @@ class MultiObject3DBBoxModel(nn.Module):
 
         return weighted_rgb, weighted_pc
 
-    def forward(self, batch):
-        rgb, mask, pc = batch
+    def forward(self, rgb, mask, pc):
         weighted_rgb, weighted_pc = self.weigh_features_by_instance_mask(rgb, pc, mask)
         rgb_features = self.rgb_feat_extractor(weighted_rgb)
         pc_features = self.pc_feat_extractor(weighted_pc)
@@ -160,11 +160,23 @@ class MultiObject3DBBoxModel(nn.Module):
 
         return refined_boxes
 
+def chamfer_distance_single_box(pred_corners, gt_corners):
+    # pred_corners, gt_corners: (8, 3)
+    dist = torch.cdist(pred_corners.unsqueeze(0), gt_corners.unsqueeze(0))  # (1, 8, 8)
+    min_dist1 = dist.min(dim=2)[0].mean()  # pred -> gt
+    min_dist2 = dist.min(dim=1)[0].mean()  # gt -> pred
+    return min_dist1 + min_dist2
+
 def hybrid_3d_bbox_loss(pred_boxes, gt_boxes):   
-    pred_boxes, gt_boxes = pred_boxes.float(), gt_boxes.float()
-    l2_loss = F.mse_loss(pred_boxes, gt_boxes) 
+    pred_boxes = pred_boxes.float()  # (B, N, 8, 3)
+    gt_boxes = gt_boxes.float()
+    l2 = F.mse_loss(pred_boxes, gt_boxes)
 
-    dist = torch.cdist(pred_boxes, gt_boxes)
-    chamfer_dist = torch.min(dist, dim=2)[0].mean() + torch.min(dist, dim=1)[0].mean()     
-
-    return l2_loss+chamfer_dist
+    chamfer = 0.0
+    B, N, _, _ = pred_boxes.shape
+    for b in range(B):
+        for n in range(N):
+            chamfer += chamfer_distance_single_box(pred_boxes[b, n], gt_boxes[b, n])
+    chamfer = chamfer / (B * N)
+    
+    return l2 + 0.5*chamfer

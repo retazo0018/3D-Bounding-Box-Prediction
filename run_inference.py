@@ -20,7 +20,7 @@ if __name__=="__main__":
     ground_bbox = pad_bounding_boxes(ground_bbox, max_instances=25)
     rgb, mask, point_cloud = preprocess_sample(rgb, mask, point_cloud, num_instances=25, sample_dim=(512, 512))
 
-    pred_box = model([rgb.unsqueeze(0), mask.unsqueeze(0), point_cloud.unsqueeze(0)])
+    pred_box = model(rgb.unsqueeze(0), mask.unsqueeze(0), point_cloud.unsqueeze(0))
     pred_box = pred_box[0].detach().numpy()
 
     pc_o3d = o3d.geometry.PointCloud()

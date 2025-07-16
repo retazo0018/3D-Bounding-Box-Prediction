@@ -22,6 +22,7 @@
 import os
 from PIL import Image
 import torch
+import albumentations as A
 import numpy as np
 from torch.utils.data import Dataset
 import torchvision.transforms as T
@@ -29,16 +30,38 @@ import torch.nn.functional as F
 from rich.console import Console
 
 
+def augment_rgb_image_without_geometry(image):
+    """
+    Apply non-geometric augmentations to an RGB image using Albumentations.
+    """
 
-def preprocess_sample(rgb, mask, point_cloud, num_instances, sample_dim):
+    transform = A.Compose([
+        A.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1, p=1.0),
+        A.GaussianBlur(blur_limit=(3, 7), p=1.0),
+        A.GaussNoise(var_limit=(10.0, 50.0), p=1.0),
+        A.RandomBrightnessContrast(p=1.0),
+        A.RGBShift(r_shift_limit=10, g_shift_limit=10, b_shift_limit=10, p=1.0),
+        A.CLAHE(p=1.0),
+    ])
+    augmented = transform(image=np.array(image))
+
+    return Image.fromarray(augmented['image'])
+
+def preprocess_rgb(rgb, sample_dim):
     IM_H, IM_W = sample_dim
-
     preprocess = T.Compose([
         T.Resize((IM_H, IM_W)),
         T.ToTensor(),  # Convert HWC NumPy array to CHW PyTorch tensor
     ])
     rgb_tensor = preprocess(rgb)
 
+    return rgb_tensor
+
+
+def preprocess_sample(rgb, mask, point_cloud, num_instances, sample_dim):
+    IM_H, IM_W = sample_dim
+
+    rgb_tensor = preprocess_rgb(rgb, sample_dim)
     mask = torch.from_numpy(mask).unsqueeze(0).float()  # (1, 12, H, W)
     mask_resized = F.interpolate(mask, size=(IM_H, IM_W), mode='nearest')  # Still (1, C, IM_H, IM_W)
     mask_resized = mask_resized.squeeze() # (C, IM_H, 512)
@@ -47,15 +70,13 @@ def preprocess_sample(rgb, mask, point_cloud, num_instances, sample_dim):
     mask_tensor = torch.cat([mask_resized, pad_tensor], dim=0)  # (25, IM_H, IM_W)
 
     point_cloud = torch.tensor(point_cloud).unsqueeze(0)  # (1, 3, H, W)
-    point_cloud_tensor = F.interpolate(point_cloud, size=(IM_H, IM_W), mode='bilinear', align_corners=True).squeeze() # (3, IM_H, IM_W)
-    
+    point_cloud_tensor = F.interpolate(point_cloud, size=(IM_H, IM_W), mode='bilinear', align_corners=True).squeeze() # (3, IM_H, IM_W)    
+
     return rgb_tensor, mask_tensor, point_cloud_tensor
 
-def load_data(data_dir):
+def load_and_prepare_data(data_dir, MAX_INSTANCES, FIXED_DIMENSION):
     rgbs, masks, pcs, bboxs3d = [], [], [], []
-    MAX_INSTANCES = 25
-    IM_H, IM_W = 640, 640
-    
+    IM_H, IM_W = FIXED_DIMENSION
     for sample_dir in os.listdir(data_dir):
         sample_path = os.path.join(data_dir, sample_dir)
         if os.path.isdir(sample_path):
@@ -66,6 +87,9 @@ def load_data(data_dir):
                 mask = np.load(mask_path)
                 pc_path = os.path.join(sample_path, "pc.npy")
                 point_cloud = np.load(pc_path)
+
+                # Apply Data Augmentation on RGB Image
+                augmented_rgb = preprocess_rgb(augment_rgb_image_without_geometry(rgb), FIXED_DIMENSION)
                 rgb, mask, point_cloud = preprocess_sample(rgb, mask, point_cloud, num_instances=MAX_INSTANCES, sample_dim=(IM_H, IM_W))
 
                 bbox3d_path = os.path.join(sample_path, "bbox3d.npy")
@@ -78,6 +102,11 @@ def load_data(data_dir):
                 pcs.append(point_cloud) # (3, 512, 512)
                 bboxs3d.append(bbox3d)  # (25, 8, 3)
 
+                rgbs.append(augmented_rgb) # (3, 512, 512)
+                masks.append(mask)  # (25, 512, 512)
+                pcs.append(point_cloud) # (3, 512, 512)
+                bboxs3d.append(bbox3d)  # (25, 8, 3)
+                
             except Exception as e:
                 Console().print(f"[bold red]❌ Error loading sample from[/bold red] [white]{sample_path}[/white]: {e}", style="red")
     
@@ -88,11 +117,6 @@ def load_data(data_dir):
         "bbox3d": bboxs3d
     }
     
-    return samples
-
-def prepare_data(data_dir):
-    samples = load_data(data_dir)
-
     return samples
 
 class Custom3DBBoxDataset(Dataset):

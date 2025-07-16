@@ -5,3 +5,5 @@ numpy
 cv2
 pytest
 rich
+transformers
+torchinfo

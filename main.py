@@ -21,12 +21,15 @@
 
 import argparse
 import torch
+import math
 from data_viz import plot_losses
+from torchinfo import summary
 from torch.utils.data import DataLoader
-from data_prepare import prepare_data, Custom3DBBoxDataset
+from data_prepare import load_and_prepare_data, Custom3DBBoxDataset
 from model import MultiObject3DBBoxModel, hybrid_3d_bbox_loss
 from rich.console import Console
 from rich.panel import Panel
+from transformers import get_cosine_schedule_with_warmup
 console = Console()
 
 
@@ -41,17 +44,28 @@ def main(data_dir, epochs, batch_size):
 
     This function prepares the data, starts the training process and saves logs, results and model.
     """
+    MAX_INSTANCES = 25
+    FIXED_DIMENSION = (640, 640)
+
     console.print(Panel.fit("🚀 [bold green]3D Bounding Box Prediction[/bold green]", border_style="green"))
 
     console.print(f"[bold yellow]Starting Data Preprocessing...[/bold yellow]")
-    dataset = Custom3DBBoxDataset(prepare_data(data_dir))
+    dataset = Custom3DBBoxDataset(load_and_prepare_data(data_dir, MAX_INSTANCES, FIXED_DIMENSION))
     console.print(f"[bold green]Data preprocessing complete! Loaded {len(dataset)} samples. [/bold green]")
     train_dataset, test_dataset = torch.utils.data.random_split(dataset, [0.8, 0.2])
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
-    dl_model = MultiObject3DBBoxModel()
-    optimizer = torch.optim.AdamW(dl_model.parameters(), lr=1e-4, betas=(0.9, 0.95), weight_decay=1e-2)
+    dl_model = MultiObject3DBBoxModel(MAX_INSTANCES)
+    console.print(f"[bold green]Model Summary: [/bold green]")
+    summary(dl_model, input_data=(torch.zeros([1, 3, 512, 512]), torch.zeros([1, 25, 512, 512]), torch.zeros([1, 3, 512, 512])))
+    
+    optimizer = torch.optim.AdamW(dl_model.parameters(), lr=1e-4, weight_decay=1e-5)
+    scheduler = get_cosine_schedule_with_warmup(
+        optimizer,
+        num_warmup_steps=5,
+        num_training_steps=math.ceil(len(train_dataset) / batch_size)  # e.g., epochs * steps_per_epoch
+    )
     dl_model.train()
     console.print(f"[bold yellow]Starting Model Training...[/bold yellow]")
 
@@ -61,7 +75,7 @@ def main(data_dir, epochs, batch_size):
         for i, batch in enumerate(train_dataloader):
             rgb, mask, pc, bbox3d = batch
             optimizer.zero_grad()
-            pred_boxes = dl_model([rgb, mask, pc])
+            pred_boxes = dl_model(rgb, mask, pc)
             loss = hybrid_3d_bbox_loss(pred_boxes, bbox3d)
             console.print(
             f"🔄 [bold cyan]Training Epoch {epoch+1} [/bold cyan] "
@@ -69,6 +83,7 @@ def main(data_dir, epochs, batch_size):
             f"[bold red]{loss:.4f}[/bold red] loss.")
             loss.backward()
             optimizer.step()
+            scheduler.step()
             epoch_loss+=loss
 
         console.print(f"[bold green]Epoch: {epoch+1} ended with loss {epoch_loss/len(train_dataloader)}. [/bold green]")
@@ -76,12 +91,14 @@ def main(data_dir, epochs, batch_size):
 
     console.print(f"[bold green]Model Training complete! [/bold green]")
     console.print(f"[bold yellow]🔄 Starting Evaluation ... [/bold yellow]")
+    plot_losses(loss_per_epoch)
+
     with torch.no_grad():
         test_loss = 0
         dl_model.eval()
         for i, batch in enumerate(test_dataloader):
             rgb, mask, pc, bbox3d = batch
-            pred_boxes = dl_model([rgb, mask, pc])
+            pred_boxes = dl_model(rgb, mask, pc)
             loss = hybrid_3d_bbox_loss(pred_boxes, bbox3d)
             test_loss+=loss
 
@@ -89,8 +106,6 @@ def main(data_dir, epochs, batch_size):
 
     torch.save(dl_model, 'model.pt')
     console.print(f"[bold green]Model Saved Successfully! [/bold green]")
-
-    plot_losses(loss_per_epoch)
 
 
 if __name__=="__main__":
